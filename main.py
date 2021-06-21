@@ -65,7 +65,7 @@ def callback_inline(call):
     def get_thousands_of_horoscopes(zodiac):
         """
 
-        получаем гороскоп с сайта гороскопы 1001 гороскоп
+        получаем гороскоп с сайта 1001 гороскоп
 
         """
         url_template = f'https://1001goroskop.ru/?znak={zodiac}'
