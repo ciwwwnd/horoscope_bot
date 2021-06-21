@@ -5,5 +5,7 @@
 * BeautifulSoup
 * requests
 
-/horo – присылает гороскоп на сегодня
-/help – помогает найти команду /horo
+```/horo``` – присылает гороскоп на сегодня.  
+```/help``` – помогает найти команду ```/horo```  
+
+https://t.me/hhoroscopes_bot
