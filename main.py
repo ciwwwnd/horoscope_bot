@@ -9,7 +9,12 @@ bot = telebot.TeleBot(conf.TOKEN)
 
 global zodiac
 
-@bot.message_handler(commands=['start', 'help'])
+@bot.message_handler(commands=['help'])
+def send_help(message):
+    bot.send_message(message.chat.id,
+                     "Это бот-агрегатор гороскопов. Чтобы узнать свой гороскоп на сегодня вызовите команду /horo")
+
+@bot.message_handler(commands=['start', 'horo'])
 def send_welcome(message):
     keyboard = types.InlineKeyboardMarkup()
     aries_button = types.InlineKeyboardButton(text='овен', callback_data='aries')
@@ -29,7 +34,7 @@ def send_welcome(message):
                  libra_button, scorpio_button, sagittarius_button,
                  capricorn_button, aquarius_button, pisces_button)
     bot.send_message(message.chat.id,
-                     "Хотите узнать свой гороскоп на сегодня? Выберите свой знак зодиака", reply_markup=keyboard)
+                     "Хотите узнать свой гороскоп на сегодня? Выберите знак зодиака", reply_markup=keyboard)
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_inline(call):
@@ -52,12 +57,22 @@ def callback_inline(call):
         horotext = tags.find('p')
         bot.send_message(call.message.chat.id, horotext)
 
+    def get_horo_365(zodiac):
+        url_template = f'https://goroskop365.ru/{zodiac}/'
+        url = requests.get(url_template).text
+        soup = BeautifulSoup(url, 'html.parser')
+        tags = soup.find('div', class_="content_wrapper horoborder")
+        horotext = tags.find('p')
+        bot.send_message(call.message.chat.id, horotext.text)
+
     def get_horo_keyboard(call):
         keyboard = types.InlineKeyboardMarkup()
         horomail_button = types.InlineKeyboardButton(text='Гороскопы Майл.ру', callback_data='get_horomail')
         thousands_of_horoscopes_button = types.InlineKeyboardButton(text='1001 гороскоп',
                                                                     callback_data='get_thousands_of_horoscopes')
-        keyboard.add(horomail_button, thousands_of_horoscopes_button)
+        get_horo_365_button = types.InlineKeyboardButton(text='Гороскопы 365',
+                                                                    callback_data='get_horo_365')
+        keyboard.add(horomail_button, thousands_of_horoscopes_button, get_horo_365_button)
         bot.send_message(call.message.chat.id, 'Ура! Пожалуйста, выберите гороскоп, который хотите получить',
                          reply_markup=keyboard)
 
@@ -103,6 +118,8 @@ def callback_inline(call):
             get_horomail(zodiac)
         if call.data == 'get_thousands_of_horoscopes':
             get_thousands_of_horoscopes(zodiac)
+        if call.data == 'get_horo_365':
+            get_horo_365(zodiac)
 
 if __name__ == '__main__':
     bot.polling(none_stop=True)
