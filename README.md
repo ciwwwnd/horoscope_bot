@@ -4,6 +4,7 @@
 * python-telegram-bot
 * BeautifulSoup
 * requests
+* json
 
 ```/horo``` – присылает гороскоп на сегодня.  
 ```/help``` – помогает найти команду ```/horo```  
